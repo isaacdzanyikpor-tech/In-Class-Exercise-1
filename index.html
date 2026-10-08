@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Truck Break-Even Calculator</title>
+  <style>
+    :root {
+      --primary: #ea580c;
+      --primary-hover: #c2410c;
+      --primary-light: #fff7ed;
+      --primary-border: #fdba74;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --border-focus: #ea580c;
+      --error-bg: #fef2f2;
+      --error-border: #fecaca;
+      --error-text: #991b1b;
+      --success-bg: #f0fdf4;
+      --success-border: #bbf7d0;
+      --success-text: #166534;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 24px 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Header */
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-icon {
+      font-size: 2.5rem;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Card styling */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Form & Inputs */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .helper-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .currency-symbol {
+      position: absolute;
+      left: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      pointer-events: none;
+      font-size: 1rem;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 14px 12px 30px;
+      font-size: 1.05rem;
+      font-family: inherit;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background-color: #ffffff;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+    }
+
+    /* Buttons */
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    button {
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 8px;
+      padding: 13px 18px;
+      cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.05s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      flex: 2;
+      background-color: var(--primary);
+      color: #ffffff;
+      border: none;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      flex: 1;
+      background-color: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    /* Error Alert */
+    .error-alert {
+      display: none;
+      background-color: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    .error-alert strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* Result Section */
+    .result-section {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .result-banner {
+      background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+      border: 1.5px solid var(--primary-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .result-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--primary-hover);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .result-value {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #9a3412;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .result-unit {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #9a3412;
+      display: block;
+    }
+
+    .result-explanation {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      line-height: 1.5;
+      margin-top: 14px;
+      text-align: left;
+    }
+
+    .result-explanation strong {
+      color: #9a3412;
+    }
+
+    /* Secondary metrics grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .metric-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .metric-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .metric-amount {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 8px 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+      body {
+        padding: 16px 12px;
+      }
+      header {
+        padding: 20px 16px;
+      }
+      h1 {
+        font-size: 1.35rem;
+      }
+      .card {
+        padding: 18px 16px;
+      }
+      .button-group {
+        flex-direction: column;
+      }
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+      .result-value {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="header-icon" aria-hidden="true">🚚🌮</div>
+      <h1>Food Truck Break-Even Calculator</h1>
+      <p class="subtitle">
+        Calculate the minimum number of meals you need to sell each day to completely cover your operating costs.
+      </p>
+    </header>
+
+    <!-- Error Alert Banner -->
+    <div id="errorAlert" class="error-alert" role="alert" aria-live="assertive">
+      <strong id="errorTitle">Please check your inputs:</strong>
+      <span id="errorMessage"></span>
+    </div>
+
+    <!-- Input Form Card -->
+    <section class="card" aria-labelledby="form-heading">
+      <h2 id="form-heading" style="display: none;">Calculator Inputs</h2>
+      <form id="calculatorForm" novalidate>
+
+        <!-- Input 1: Daily Fixed Costs -->
+        <div class="form-group">
+          <label for="fixedCosts">
+            <span>Daily Fixed Costs</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="currency-symbol">$</span>
+            <input 
+              type="number" 
+              id="fixedCosts" 
+              name="fixedCosts" 
+              step="any" 
+              placeholder="e.g. 150.00" 
+              required
+              aria-describedby="fixedCostsHelp"
+            >
+          </div>
+          <p id="fixedCostsHelp" class="helper-text">
+            Daily expenses like permits, commissary kitchen, truck parking, insurance, and equipment. Can be $0.
+          </p>
+        </div>
+
+        <!-- Input 2: Selling Price per Meal -->
+        <div class="form-group">
+          <label for="sellingPrice">
+            <span>Selling Price per Meal</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="currency-symbol">$</span>
+            <input 
+              type="number" 
+              id="sellingPrice" 
+              name="sellingPrice" 
+              step="any" 
+              placeholder="e.g. 14.00" 
+              required
+              aria-describedby="sellingPriceHelp"
+            >
+          </div>
+          <p id="sellingPriceHelp" class="helper-text">
+            The menu price a customer pays for one meal.
+          </p>
+        </div>
+
+        <!-- Input 3: Ingredient & Packaging Cost per Meal -->
+        <div class="form-group">
+          <label for="costPerMeal">
+            <span>Ingredient &amp; Packaging Cost per Meal</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="currency-symbol">$</span>
+            <input 
+              type="number" 
+              id="costPerMeal" 
+              name="costPerMeal" 
+              step="any" 
+              placeholder="e.g. 4.50" 
+              required
+              aria-describedby="costPerMealHelp"
+            >
+          </div>
+          <p id="costPerMealHelp" class="helper-text">
+            Direct variable costs per meal: food ingredients, sauces, takeout boxes, napkins, and cutlery.
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+          <button type="submit" class="btn-primary" id="calculateBtn">
+            Calculate Break-Even
+          </button>
+          <button type="button" class="btn-secondary" id="resetBtn">
+            Reset
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- Results Section -->
+    <section id="resultSection" class="result-section card" aria-live="polite">
+      <div class="result-banner">
+        <div class="result-label">Daily Target</div>
+        <div class="result-value" id="breakEvenMeals">0</div>
+        <div class="result-unit">meals needed today</div>
+
+        <div class="result-explanation" id="resultExplanation">
+          <!-- Populated dynamically via JavaScript -->
+        </div>
+      </div>
+
+      <!-- Financial Breakdown Cards -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-title">Margin per Meal</div>
+          <div class="metric-amount" id="marginPerMeal">$0.00</div>
+          <p class="helper-text" style="margin-top: 4px;">Profit left from each meal to pay fixed costs</p>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Break-Even Revenue</div>
+          <div class="metric-amount" id="breakEvenRevenue">$0.00</div>
+          <p class="helper-text" style="margin-top: 4px;">Minimum total sales intake needed to break even</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      Food Truck Break-Even Calculator &bull; Plan smart, cook fresh!
+    </footer>
+  </div>
+
+  <script>
+    (function() {
+      // DOM Elements
+      var form = document.getElementById('calculatorForm');
+      var fixedCostsInput = document.getElementById('fixedCosts');
+      var sellingPriceInput = document.getElementById('sellingPrice');
+      var costPerMealInput = document.getElementById('costPerMeal');
+      var resetBtn = document.getElementById('resetBtn');
+
+      var errorAlert = document.getElementById('errorAlert');
+      var errorMessage = document.getElementById('errorMessage');
+
+      var resultSection = document.getElementById('resultSection');
+      var breakEvenMealsEl = document.getElementById('breakEvenMeals');
+      var resultExplanationEl = document.getElementById('resultExplanation');
+      var marginPerMealEl = document.getElementById('marginPerMeal');
+      var breakEvenRevenueEl = document.getElementById('breakEvenRevenue');
+
+      // Helper to format currency
+      function formatMoney(amount) {
+        return '$' + amount.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      }
+
+      // Hide error alert
+      function clearError() {
+        errorAlert.style.display = 'none';
+        errorMessage.textContent = '';
+      }
+
+      // Display friendly error alert
+      function showError(msg) {
+        errorMessage.textContent = msg;
+        errorAlert.style.display = 'block';
+        resultSection.style.display = 'none';
+        errorAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // Hide results
+      function hideResults() {
+        resultSection.style.display = 'none';
+      }
+
+      // Main calculation handler
+      function calculateBreakEven(e) {
+        if (e && e.preventDefault) {
+          e.preventDefault();
+        }
+
+        clearError();
+
+        var fixedStr = fixedCostsInput.value.trim();
+        var priceStr = sellingPriceInput.value.trim();
+        var costStr = costPerMealInput.value.trim();
+
+        // 1. Check for empty inputs
+        if (fixedStr === '' || priceStr === '' || costStr === '') {
+          showError('Please enter a value for all three fields to calculate your break-even point.');
+          return;
+        }
+
+        var fixedCosts = parseFloat(fixedStr);
+        var sellingPrice = parseFloat(priceStr);
+        var costPerMeal = parseFloat(costStr);
+
+        // 2. Validate numeric values
+        if (isNaN(fixedCosts) || isNaN(sellingPrice) || isNaN(costPerMeal)) {
+          showError('Please make sure all inputs are valid numbers.');
+          return;
+        }
+
+        // 3. Reject negative numbers (Fixed costs can be zero, but not negative)
+        if (fixedCosts < 0 || sellingPrice < 0 || costPerMeal < 0) {
+          showError('Values cannot be negative. Please enter positive amounts (or $0 for daily fixed costs).');
+          return;
+        }
+
+        // 4. Selling price must be strictly greater than ingredient & packaging cost
+        if (sellingPrice <= costPerMeal) {
+          var formattedPrice = formatMoney(sellingPrice);
+          var formattedCost = formatMoney(costPerMeal);
+          showError(
+            'The selling price (' + formattedPrice + ') must be greater than your ingredient and packaging cost (' + 
+            formattedCost + '). At this price, each meal sold loses money or contributes nothing toward covering your daily costs.'
+          );
+          return;
+        }
+
+        // Calculation logic
+        var contributionMargin = sellingPrice - costPerMeal;
+        var breakEvenMeals = 0;
+
+        if (fixedCosts === 0) {
+          breakEvenMeals = 0;
+        } else {
+          // Break-even formula rounded UP to the nearest whole meal
+          breakEvenMeals = Math.ceil(fixedCosts / contributionMargin);
+        }
+
+        var totalBreakEvenRevenue = breakEvenMeals * sellingPrice;
+
+        // Display results
+        breakEvenMealsEl.textContent = breakEvenMeals.toLocaleString('en-US');
+        marginPerMealEl.textContent = formatMoney(contributionMargin);
+        breakEvenRevenueEl.textContent = formatMoney(totalBreakEvenRevenue);
+
+        // Dynamic, friendly explanation
+        if (fixedCosts === 0) {
+          resultExplanationEl.innerHTML = 
+            '<strong>Zero fixed costs!</strong> Since your daily fixed costs are $0.00, you have no overhead to recoup today. ' +
+            'The <strong>minimum number of meals needed to cover daily costs is 0</strong>. ' +
+            'Every meal you sell contributes ' + formatMoney(contributionMargin) + ' directly into profit!';
+        } else {
+          resultExplanationEl.innerHTML = 
+            'This is the <strong>minimum number of meals needed to cover daily costs</strong>. ' +
+            'Because you cannot sell a fraction of a meal, this number is rounded up to the nearest whole meal (' + 
+            breakEvenMeals.toLocaleString('en-US') + ' meals). ' +
+            'Selling this quantity covers your ' + formatMoney(fixedCosts) + ' fixed costs and food expenses. ' +
+            'Every meal sold beyond this target generates <strong>' + formatMoney(contributionMargin) + ' in net profit</strong>!';
+        }
+
+        resultSection.style.display = 'block';
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // Reset form and view
+      function resetForm() {
+        form.reset();
+        clearError();
+        hideResults();
+        fixedCostsInput.focus();
+      }
+
+      // Event Listeners
+      form.addEventListener('submit', calculateBreakEven);
+      resetBtn.addEventListener('click', resetForm);
+
+      // Auto-clear errors on typing
+      fixedCostsInput.addEventListener('input', clearError);
+      sellingPriceInput.addEventListener('input', clearError);
+      costPerMealInput.addEventListener('input', clearError);
+
+    })();
+  </script>
+</body>
+</html>
